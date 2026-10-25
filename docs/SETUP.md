@@ -13,7 +13,7 @@ There are two different revisions:
 
 They belong to different repositories and are not interchangeable. The docs-only commit D contains this guide and pins C. Read D's setup instructions, but run adopt.py from a clean checkout of C. The UPSTREAM.json written to the product records C and hashes of the copied file bytes, never D or private-source provenance.
 
-The assignments below intentionally contain the non-runnable placeholder REVIEWED_PUBLIC_CORE_COMMIT in initial commit C. After C receives bound static review, the coordinator replaces both VDH_SHA assignments with C's literal full SHA and creates the documentation-only child D. Until then, the checkout step fails by design. Do not replace the placeholder with HEAD, D, or an invented SHA.
+This guide is the documentation-only child D of reviewed core commit C. Both VDH_SHA assignments below pin C by its full immutable SHA. Run the adoption tool from a clean checkout of C; do not substitute D or a moving branch.
 
 ## Select the reviewed core checkout
 
@@ -24,7 +24,7 @@ POSIX shell:
 ~~~sh
 set -eu
 VDH_SOURCE="../verifiable-dev-harness-core"
-VDH_SHA="REVIEWED_PUBLIC_CORE_COMMIT"
+VDH_SHA="488ec5583862af253fc3a7a7350476789a32a3b1"
 
 core_status="$(git -C "$VDH_SOURCE" status --porcelain)"
 test -z "$core_status"
@@ -40,7 +40,7 @@ PowerShell:
 ~~~powershell
 $ErrorActionPreference = "Stop"
 $VDH_SOURCE = "../verifiable-dev-harness-core"
-$VDH_SHA = "REVIEWED_PUBLIC_CORE_COMMIT"
+$VDH_SHA = "488ec5583862af253fc3a7a7350476789a32a3b1"
 
 $coreStatus = git -C $VDH_SOURCE status --porcelain
 if ($LASTEXITCODE -ne 0 -or $coreStatus) { throw "The core reference checkout must be clean." }
