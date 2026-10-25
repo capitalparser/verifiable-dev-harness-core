@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "scope": "synthetic inputs for the real native verification CLI; not a product application",
+  "files": {
+    "probe.py": "from pathlib import Path\nimport sys\n\nname = sys.argv[1]\nif name == \"smoke\":\n    print(\"READY\")\nelif name == \"alpha\":\n    value = Path(\"src/alpha.txt\").read_text(encoding=\"utf-8\").strip()\n    print(\"ALPHA_REJECTED\" if value == \"reject\" else \"ALPHA_OK\")\n    raise SystemExit(7 if value == \"reject\" else 0)\nelif name == \"beta\":\n    print(\"UNRELATED_BETA\")\nelse:\n    raise SystemExit(9)\n",
+    "src/alpha.txt": "base\n",
+    "src/beta.txt": "base\n"
+  },
+  "manifest": {
+    "schema_version": 1,
+    "docs_paths": [
+      "README.md"
+    ],
+    "risk_paths": [
+      "migrations/*"
+    ],
+    "checks": {
+      "smoke": {
+        "argv": [
+          "{python}",
+          "-B",
+          "probe.py",
+          "smoke"
+        ],
+        "timeout_seconds": 3
+      },
+      "alpha": {
+        "argv": [
+          "{python}",
+          "-B",
+          "probe.py",
+          "alpha"
+        ],
+        "timeout_seconds": 3
+      },
+      "beta": {
+        "argv": [
+          "{python}",
+          "-B",
+          "probe.py",
+          "beta"
+        ],
+        "timeout_seconds": 3
+      }
+    },
+    "profiles": {
+      "docs": [
+        "smoke"
+      ],
+      "focused": [
+        "smoke"
+      ],
+      "full": [
+        "smoke"
+      ]
+    },
+    "features": [
+      {
+        "id": "alpha",
+        "paths": [
+          "src/alpha.txt"
+        ],
+        "checks": [
+          "alpha"
+        ],
+        "symptoms": [
+          "alpha"
+        ],
+        "entrypoints": [
+          "probe.py"
+        ],
+        "journey": [
+          "probe input"
+        ],
+        "failure_probe": "reject returns nonzero"
+      },
+      {
+        "id": "beta",
+        "paths": [
+          "src/beta.txt"
+        ],
+        "checks": [
+          "beta"
+        ],
+        "symptoms": [
+          "beta"
+        ],
+        "entrypoints": [
+          "probe.py"
+        ],
+        "journey": [
+          "probe input"
+        ],
+        "failure_probe": "reject returns nonzero"
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "docs_paths": [
+    "README.md",
+    "docs/*",
+    "specs/*"
+  ],
+  "risk_paths": [
+    ".vdh/*",
+    "harness/*",
+    "tests/*",
+    ".github/workflows/*"
+  ],
+  "checks": {
+    "diff": {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "{base}",
+        "--"
+      ],
+      "timeout_seconds": 30
+    },
+    "feature-map": {
+      "argv": [
+        "{python}",
+        "-B",
+        ".vdh/feature_map.py",
+        "lint",
+        "--root",
+        ".",
+        "--manifest",
+        "harness/verification.json"
+      ],
+      "timeout_seconds": 30
+    },
+    "adoption-pending": {
+      "argv": [
+        "{python}",
+        "-c",
+        "raise SystemExit('PRODUCT_NOT_CONFIGURED: replace this guard only after wiring an owned product AC, real check, normal/negative journey and required full suite')"
+      ],
+      "timeout_seconds": 30
+    }
+  },
+  "profiles": {
+    "docs": [
+      "diff",
+      "feature-map",
+      "adoption-pending"
+    ],
+    "focused": [
+      "diff",
+      "feature-map",
+      "adoption-pending"
+    ],
+    "full": [
+      "diff",
+      "feature-map",
+      "adoption-pending"
+    ]
+  },
+  "features": []
+}

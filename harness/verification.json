@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "docs_paths": [
+    "README.md",
+    "docs/*",
+    "specs/*"
+  ],
+  "risk_paths": [
+    "tools/*",
+    "harness/*",
+    "tests/*",
+    ".github/workflows/*"
+  ],
+  "checks": {
+    "diff": {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "{base}",
+        "--"
+      ],
+      "timeout_seconds": 30
+    },
+    "harness-contract": {
+      "argv": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py"
+      ],
+      "timeout_seconds": 120
+    },
+    "feature-map": {
+      "argv": [
+        "{python}",
+        "-B",
+        "tools/feature_map.py",
+        "lint"
+      ],
+      "timeout_seconds": 30
+    },
+    "harness-journey": {
+      "argv": [
+        "{python}",
+        "-B",
+        "tools/harness_journey.py"
+      ],
+      "timeout_seconds": 60
+    }
+  },
+  "profiles": {
+    "docs": [
+      "diff",
+      "feature-map"
+    ],
+    "focused": [
+      "diff",
+      "feature-map"
+    ],
+    "full": [
+      "diff",
+      "feature-map",
+      "harness-contract",
+      "harness-journey"
+    ]
+  },
+  "features": [
+    {
+      "id": "harness-verification",
+      "paths": [
+        "tools/*",
+        "harness/*",
+        "tests/*",
+        ".gitignore",
+        "specs/harness-verification/*",
+        "docs/SETUP.md"
+      ],
+      "symptoms": [
+        "I do not know which checks should run for this change",
+        "A mapped change has no verification",
+        "A receipt is stale or appears tampered",
+        "Feature navigation points to missing or ambiguous references",
+        "How can I adopt the pinned verification core safely?"
+      ],
+      "entrypoints": [
+        "tools/verify.py:main",
+        "tools/verify.py:select",
+        "tools/verify.py:execute",
+        "tools/verify_receipt.py:main",
+        "tools/feature_map.py:main",
+        "tools/harness_journey.py:main",
+        "tools/adopt.py:main"
+      ],
+      "journey": [
+        "Look up a feature",
+        "Plan selected checks",
+        "Execute once into external evidence",
+        "Inspect receipt and check logs"
+      ],
+      "checks": [
+        "harness-contract",
+        "feature-map",
+        "harness-journey"
+      ],
+      "failure_probe": "Unmapped changes select full, and a requested downgrade below the minimum profile is blocked.",
+      "navigation": {
+        "spec": "specs/harness-verification/SPEC.md#BR-H002",
+        "environment": "docs/FACTORY_READY.md",
+        "tests": [
+          "tests/test_verify.py",
+          "tests/test_verify_receipt.py",
+          "tests/test_factory_ready.py",
+          "tests/test_adopt.py"
+        ],
+        "acceptance": [
+          {
+            "ref": "specs/harness-verification/ACCEPTANCE.md#AC-H010",
+            "checks": [
+              "feature-map",
+              "harness-contract"
+            ]
+          },
+          {
+            "ref": "specs/harness-verification/ACCEPTANCE.md#AC-H011",
+            "checks": [
+              "harness-journey"
+            ]
+          },
+          {
+            "ref": "specs/harness-verification/ACCEPTANCE.md#AC-H012",
+            "checks": [
+              "harness-journey",
+              "harness-contract"
+            ]
+          },
+          {
+            "ref": "specs/harness-verification/ACCEPTANCE.md#AC-H013",
+            "checks": [
+              "feature-map",
+              "harness-contract"
+            ]
+          },
+          {
+            "ref": "docs/SETUP.md#AC-H061",
+            "checks": [
+              "harness-contract"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
